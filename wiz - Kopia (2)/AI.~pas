@@ -1,0 +1,482 @@
+unit AI;
+
+interface
+    uses
+          Engine, Graphical_Interface, Players,Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, StdCtrls, ExtCtrls, GR32;
+    function hints(game :TGame) : TPole;
+implementation
+
+    {function hints(game :TGame) : TPole;
+        function testing(var x,y: Integer; k,l,deep: Integer; game: TGame) : real;
+        var i,j : Integer;
+            res, circlePoints, crossPoints: real;
+        begin
+            inc(deep);
+            //Result := -1000;
+            circlePoints := game.getCirclePlayer.getScore - game.punishmentValue * game.numberOfGroups(CIRCLE);
+            crossPoints := game.getCrossPlayer.getScore - game.punishmentValue * game.numberOfGroups(CROSS);
+
+            if game.getCurrentPlayer = game.getCirclePlayer then
+                Result := circlePoints - crossPoints
+            else
+                Result := crossPoints - circlePoints;
+
+
+            if deep <= 1 then
+            begin
+              for i:=0 to game.getBoard.n-1 do
+                for j:=0 to game.getBoard.n-1 do
+                begin
+                    if game.getBoard.pola[i,j].stan = NONE then
+                    begin
+                        res := testing(x,y,i,j,deep,game);
+                        if Result < res then
+                        begin
+                            Result := res;
+                            x := i;
+                            y := j;
+                        end;
+                    end;
+                end;
+            end;
+            //Result := roznica punktow
+        end;
+    var circlePoints,crossPoints : real;
+        //break : boolean;
+        //testBoard : TPlansza;
+        i,j,deep,x,y : Integer;
+    begin
+        Result := nil;
+        //break := false;
+        circlePoints := game.getCirclePlayer.getScore - game.punishmentValue * game.numberOfGroups(CIRCLE);
+        crossPoints := game.getCrossPlayer.getScore - game.punishmentValue * game.numberOfGroups(CROSS);
+        //if NOT(game.getCurrentPlayer = game.getCrossPlayer) OR NOT (crossPoints > circlePoints) then //koniec kiedy warto krzyzykowi spasowac
+        //begin
+            x := 0; y := 0; deep := 0; i:=0; j:=0;
+            testing(x,y,i,j,deep,game);
+            Result := game.getBoard.pola[x,y];
+        //end;
+    end;}
+
+    {function hints(game :TGame) : TPole;
+        function test2(i,j:integer; g: TGame) : Real;
+        var circlePoints,crossPoints : real;
+        begin
+            g.getCurrentPlayer.addPoint;
+            if g.getCurrentPlayer = g.getCirclePlayer then
+                g.getBoard.pola[i,j].stan := CIRCLE
+            else
+                g.getBoard.pola[i,j].stan := CROSS;
+            circlePoints := g.getCirclePlayer.getScore - g.punishmentValue * g.numberOfGroups(CIRCLE);
+            crossPoints := g.getCrossPlayer.getScore - g.punishmentValue * g.numberOfGroups(CROSS);
+
+            if g.getCurrentPlayer = g.getCirclePlayer then
+                Result := crossPoints - circlePoints
+            else
+                Result := circlePoints - crossPoints;
+
+            g.getBoard.pola[i,j].stan := NONE;
+            g.getCurrentPlayer.decPoint;
+        end;
+
+        function test(i,j: Integer; g: TGame) : Real;
+        var circlePoints,crossPoints, roznica,nr: real;
+            k,l: Integer;
+        //begin
+        //if g.getBoard.pola[i,j].stan = NONE then
+        begin
+            g.getCurrentPlayer.addPoint;
+            if g.getCurrentPlayer = g.getCirclePlayer then
+                g.getBoard.pola[i,j].stan := CIRCLE
+            else
+                g.getBoard.pola[i,j].stan := CROSS;
+
+            circlePoints := g.getCirclePlayer.getScore - g.punishmentValue * g.numberOfGroups(CIRCLE);
+            crossPoints := g.getCrossPlayer.getScore - g.punishmentValue * g.numberOfGroups(CROSS);
+
+            if g.getCurrentPlayer = g.getCirclePlayer then
+            begin
+                Result := circlePoints - crossPoints;
+                for k:=0 to g.getBoard.n-1 do
+                    for l:=0 to g.getBoard.n-1 do
+                    if g.getBoard.pola[k,l].stan = 0 then
+                    begin
+                        nr := test2(k,l,g);
+                        if (Result < nr)  then
+                        begin
+                            //roznica := nr;
+                            Result := nr;
+                            //ShowMessage(CurrToStr(test(i,j,symulacja)));
+                        end;
+                    end;
+                g.setCurrentPlayer(g.getCrossPlayer);
+            end
+            else
+            begin
+                Result := crossPoints - circlePoints;
+                for k:=0 to g.getBoard.n-1 do
+                    for l:=0 to g.getBoard.n-1 do
+                    if g.getBoard.pola[k,l].stan = 0 then
+                    begin
+                        nr := test2(k,l,g);
+                        if (Result < nr)  then
+                        begin
+                            //roznica := nr;
+                            Result := nr;
+                            //ShowMessage(CurrToStr(test(i,j,symulacja)));
+                        end;
+                    end;
+                g.setCurrentPlayer(g.getCirclePlayer);
+            end;
+            g.getBoard.pola[i,j].stan := NONE;
+            g.getCurrentPlayer.decPoint;
+        //end
+        //else
+        //  Result := -1000;
+        end;
+    var i,j,deep: Integer;
+        roznica, nr: real;
+        symulacja : TGame;
+    begin
+        symulacja := TGame.Copy(game);
+        Randomize;
+
+        i:= Random(symulacja.getBoard.n);
+        j:= Random(symulacja.getBoard.n);
+        while (symulacja.getBoard.pola[i,j].stan <> NONE) do
+        begin
+            i:= Random(symulacja.getBoard.n);
+            j:= Random(symulacja.getBoard.n); //ShowMessage(IntToStr(i)+'  '+IntToStr(j));
+        end;
+
+        roznica := test(i,j,symulacja);
+        symulacja.getCurrentPlayer.decPoint;
+        Result := game.getBoard.pola[i,j];
+        //ShowMessage(CurrToStr(roznica));
+        for i:=0 to game.getBoard.n-1 do
+          for j:=0 to game.getBoard.n-1 do
+            if (game.getBoard.pola[i,j].stan = NONE) then
+            begin
+              nr := test(i,j,symulacja);
+              if (roznica < nr)  then
+              begin
+                  roznica := nr;
+                  Result := game.getBoard.pola[i,j];
+                  ShowMessage(CurrToStr(test(i,j,symulacja)));
+              end;
+            end;
+    end;}
+    ///////////////////////////////////////
+
+
+    {function test(i,j: Integer;g: TGame;deep:Integer) : Real;
+    var circlePoints,crossPoints,nr: real;
+        k,l : Integer;
+    begin
+        if (deep <> 1)  then
+        begin
+           if (deep mod 2) = 0 then
+           begin
+               //g.getCurrentPlayer.addPoint;
+               if g.getCurrentPlayer = g.getCirclePlayer then
+               begin
+                   g.getBoard.pola[i,j].stan := CROSS;
+                   g.getCrossPlayer.addPoint;
+               end
+               else
+               begin
+                   g.getBoard.pola[i,j].stan := CIRCLE;
+                   g.getCirclePlayer.addPoint;
+               end;
+               Result := -1000;
+               for k:=0 to g.getBoard.n-1 do
+                   for l:=0 to g.getBoard.n-1 do
+                      if (g.getBoard.pola[k,l].stan = NONE) then
+                      begin
+                          nr := test(k,l,g,deep-1);
+                          if (Result < nr)  then
+                          begin
+                              Result := nr;
+                              //Result := game.getBoard.pola[i,j];
+                              //ShowMessage(CurrToStr(nr));
+                          end;
+                      end;
+
+
+               g.getBoard.pola[i,j].stan := NONE;
+               if g.getCurrentPlayer = g.getCirclePlayer then
+                   g.getCrossPlayer.decPoint
+               else
+                   g.getCirclePlayer.decPoint;
+           end
+           else
+           begin
+               g.getCurrentPlayer.addPoint;
+               if g.getCurrentPlayer = g.getCirclePlayer then
+                   g.getBoard.pola[i,j].stan := CIRCLE
+               else
+                   g.getBoard.pola[i,j].stan := CROSS;
+               Result := -1000;
+               for k:=0 to g.getBoard.n-1 do
+                   for l:=0 to g.getBoard.n-1 do
+                      if (g.getBoard.pola[k,l].stan = NONE) then
+                      begin
+                          nr := test(k,l,g,deep-1);
+                          if (Result < nr)  then
+                          begin
+                              Result := nr;
+                              //Result := game.getBoard.pola[i,j];
+                              //ShowMessage(CurrToStr(nr));
+                          end;
+                      end;
+               g.getBoard.pola[i,j].stan := NONE;
+               g.getCurrentPlayer.decPoint;
+           end;
+        end
+        else
+        begin
+            g.getCurrentPlayer.addPoint;
+            if g.getCurrentPlayer = g.getCirclePlayer then
+                g.getBoard.pola[i,j].stan := CIRCLE
+            else
+                g.getBoard.pola[i,j].stan := CROSS;
+
+            circlePoints := g.getCirclePlayer.getScore - g.punishmentValue * g.numberOfGroups(CIRCLE);
+            crossPoints := g.getCrossPlayer.getScore - g.punishmentValue * g.numberOfGroups(CROSS);
+
+            if g.getCurrentPlayer = g.getCirclePlayer then
+                Result := circlePoints - crossPoints
+            else
+                Result := crossPoints - circlePoints;
+            g.getBoard.pola[i,j].stan := NONE;
+            g.getCurrentPlayer.decPoint;
+        end;
+    end;}
+
+
+    {function test(var x,y: Integer; i,j,deep: Integer;g: TGame): Real;
+    var cirP,croP,roz: Real;
+        k,l : Integer;
+    begin     }
+    {        if max then
+        begin
+
+        end
+        else
+        begin
+
+        end;
+}
+       { if deep = 3 then
+        begin
+            cirP := g.getCirclePlayer.getScore - g.punishmentValue * g.numberOfGroups(CIRCLE);
+            croP := g.getCrossPlayer.getScore - g.punishmentValue * g.numberOfGroups(CROSS);
+            if g.getCurrentPlayer = g.getCirclePlayer then
+                Result := cirP - croP
+            else
+                Result := croP - cirP;
+        end
+        else
+        begin
+            if deep mod 2 = 1 then     //max
+            begin
+                if g.getCurrentPlayer = g.getCirclePlayer then
+                    g.getBoard.pola[i,j].stan := CIRCLE
+                else
+                    g.getBoard.pola[i,j].stan := CROSS;
+                Result := -1000;
+                for k:=0 to g.getBoard.n-1 do
+                    for l:=0 to g.getBoard.n-1 do
+                    begin
+                        if g.getBoard.pola[k,l].stan = NONE then
+                        begin
+                            roz := test(x,y,k,l,deep+1,g);
+                            if Result < roz then
+                            begin
+                                Result := roz;
+                                x := k; y := l;
+                            end;
+                        end;
+                    end;
+                g.getBoard.pola[i,j].stan := NONE;
+            end
+            else
+            begin
+                //g.getCurrentPlayer.addPoint;
+                if g.getCurrentPlayer = g.getCirclePlayer then
+                    g.getBoard.pola[i,j].stan := CROSS
+                end
+                    g.getBoard.pola[i,j].stan := CIRCLE;
+                Result := -1000;
+                for k:=0 to g.getBoard.n-1 do
+                    for l:=0 to g.getBoard.n-1 do
+                    begin
+                        if g.getBoard.pola[k,l].stan = NONE then
+                        begin
+                            roz := test(x,y,k,l,deep+1,g);
+                            if Result < roz then
+                            begin
+                                Result := roz;
+                                x := k; y := l;
+                            end;
+                        end;
+                    end;
+                g.getBoard.pola[i,j].stan := NONE;
+            end;
+        end;
+
+
+        //g.getCurrentPlayer.decPoint;
+    end;}
+
+    {function test(a,b,c,d,e,f: Integer; g: TGame) :Real;
+    var cirP,croP : Real;
+    begin
+        g.getCurrentPlayer.addPoint;
+        g.getCurrentPlayer.addPoint;
+        if g.getCurrentPlayer = g.getCirclePlayer then
+        begin
+           g.getCrossPlayer.addPoint;
+           g.getBoard.pola[a,b].stan := CIRCLE;
+           g.getBoard.pola[c,d].stan := CROSS;
+           g.getBoard.pola[e,f].stan := CIRCLE;
+        end
+        else
+        begin
+           g.getCirclePlayer.addPoint;
+           g.getBoard.pola[a,b].stan := CROSS;
+           g.getBoard.pola[c,d].stan := CIRCLE;
+           g.getBoard.pola[e,f].stan := CROSS;
+        end;
+
+        cirP := g.getCirclePlayer.getScore - g.punishmentValue * g.numberOfGroups(CIRCLE);
+        croP := g.getCrossPlayer.getScore - g.punishmentValue * g.numberOfGroups(CROSS);
+
+        if g.getCurrentPlayer = g.getCirclePlayer then
+        begin
+                g.getCrossPlayer.decPoint;
+                Result := cirP - croP
+        end
+        else
+        begin
+                g.getCrossPlayer.decPoint;
+                Result := croP - cirP;
+        end;
+
+           g.getBoard.pola[a,b].stan := NONE;
+           g.getBoard.pola[c,d].stan := NONE;
+           g.getBoard.pola[e,f].stan := NONE;
+        g.getCurrentPlayer.decPoint;
+        g.getCurrentPlayer.decPoint;
+    end;
+
+    function hints(game :TGame) : TPole;
+    var a,b,c,d,e,f : Integer;
+        roznica, nr: real;
+        symulacja : TGame;
+    begin
+    if game.getMovesNumber< game.getBoard.n*game.getBoard.n then
+    begin
+        symulacja := TGame.Copy(game);
+        Randomize;
+        a:= Random(symulacja.getBoard.n);
+        b:= Random(symulacja.getBoard.n);
+        while (symulacja.getBoard.pola[a,b].stan <> NONE) do
+        begin
+            a:= Random(symulacja.getBoard.n);
+            b:= Random(symulacja.getBoard.n); //ShowMessage(IntToStr(i)+'  '+IntToStr(j));
+        end;
+        roznica := -1000;
+        Result := game.getBoard.pola[a,b];
+        //ShowMessage(IntToStr(game.getMovesNumber));
+        if game.getMovesNumber > 1 then
+        begin
+            for a:=0 to game.getBoard.n-1 do
+                for b:=0 to game.getBoard.n-1 do
+                    for c:=0 to game.getBoard.n-1 do
+                        for d:=0 to game.getBoard.n-1 do
+                            for e:=0 to game.getBoard.n-1 do
+                                for f:=0 to game.getBoard.n-1 do
+                                    if (game.getBoard.pola[a,b].stan = NONE)
+                                        AND(game.getBoard.pola[c,d].stan = NONE)
+                                        AND(game.getBoard.pola[e,f].stan = NONE)
+                                        AND ((a<>c)OR(b<>d))
+                                        AND ((a<>e)OR(b<>f))
+                                        AND ((c<>e)OR(d<>f))then
+                  begin
+                      nr := test(a,b,c,d,e,f,symulacja);
+                      if (roznica < nr)  then
+                      begin
+                          roznica := nr;
+                          Result := game.getBoard.pola[a,b];
+                          //ShowMessage(CurrToStr(nr));
+                      end;
+                  end;
+        end;
+
+
+    end
+    else
+      Result := nil;
+      end; }
+
+
+    {function hints(game :TGame) : TPole;
+    var i,j : Integer;
+        roznica, nr: real;
+        symulacja : TGame;
+    begin
+        if game.getMovesNumber< game.getBoard.n*game.getBoard.n then
+        begin
+
+        end
+        else
+            Result := nil;
+    end;}
+
+    function test1(a,b: Integer; g: TGame) : Real;
+    begin
+        result := 0;
+    end;
+
+    function hints(game :TGame) : TPole;
+    var a,b : Integer;
+        roz,newroz : Real;
+        symulacja : TGame;
+    begin
+        if game.getMovesNumber< game.getBoard.n*game.getBoard.n then
+        begin
+            symulacja := TGame.Copy(game);
+            Randomize;
+            a:= Random(symulacja.getBoard.n);
+            b:= Random(symulacja.getBoard.n);
+            while (symulacja.getBoard.pola[a,b].stan <> NONE) do
+            begin
+                a:= Random(symulacja.getBoard.n);
+                b:= Random(symulacja.getBoard.n); //ShowMessage(IntToStr(i)+'  '+IntToStr(j));
+            end;
+            roz := -1000;
+            Result := game.getBoard.pola[a,b];
+
+            if game.getMovesNumber > 1 then
+            begin
+                for a:=0 to game.getBoard.n-1 do
+                    for b:=0 to game.getBoard.n-1 do
+                    begin
+                        if game.getBoard.pola[a,b] = NONE then
+                        begin
+                            newroz := test1(a,b,symulacja);
+                            if roz < newroz then
+                            begin
+                                roz := newroz;
+                                Result := game.getBoard.pola[a,b];
+                            end;
+                        end;
+                    end;
+             end;
+        end
+        else
+          Result := nil;
+    end;
+end.
