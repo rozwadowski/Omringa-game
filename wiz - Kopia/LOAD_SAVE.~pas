@@ -1,0 +1,24 @@
+unit LOAD_SAVE;
+
+interface
+   uses Engine,Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, StdCtrls, ExtCtrls, GR32;
+
+   procedure save(gra : TGame; plik: String);
+
+implementation
+
+   procedure save(gra : TGame; plik : String);
+   var
+       TF : TextFile;
+   begin
+       AssignFile(TF, plik+'.dat');
+      // if Not FileExists(plik) Then // Sprawdzenie, czy plik istnieje
+       ReWrite(TF);
+       Writeln(TF, StrToInt(gra.plansza.n));
+
+
+
+       CloseFile(TF);
+    end;
+end.

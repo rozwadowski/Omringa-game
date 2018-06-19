@@ -1,0 +1,63 @@
+unit Players;
+
+interface
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, StdCtrls, ExtCtrls, GR32;
+
+//type
+//  TPole = class;
+
+//type
+//  TPlansza = class;
+
+type
+  TGracz = class
+       imie : String;
+       wynik : real;
+       pas : boolean;
+       automat : boolean;
+      procedure graj(var plansza: TPlansza);
+  end;
+
+type
+  TUrzytkownik = class(TGracz)
+      constructor Create(name: String; lic : Integer);
+      //procedure graj;
+  end;
+
+type
+  TKomputer = class(TGracz)
+      constructor Create(name: String);
+      procedure graj(var plansza: TPlansza);
+  end;
+  
+implementation
+
+  constructor  TUrzytkownik.Create(name: String; lic : Integer);
+  begin
+      self.imie := name;
+      self.wynik := lic;
+      self.pas := false;
+      self.automat := false;
+  end;
+
+  constructor  TKomputer.Create(name: String);
+  begin
+      self.imie := name;
+      Randomize;
+      self.wynik := Random(10);
+      self.pas := false;
+      self.automat := true;
+  end;
+
+  procedure TGracz.graj(var plansza: TPlansza);
+  begin
+
+  end;
+
+  procedure TKomputer.graj(var plansza: TPlansza);
+  begin
+
+  end;
+end.

@@ -1,0 +1,23 @@
+program Project1;
+
+uses
+  Forms,
+  Game in 'Game.pas' {Omringa},
+  Players in 'Players.pas',
+  Graphical_Interface in 'Graphical_Interface.pas',
+  //Main in 'Main.pas' {Menu},
+  Engine in 'Engine.pas';
+
+//Unit2 in 'Unit2.pas' {Form2};
+
+{$R *.res}
+
+begin
+  Application.Initialize;
+ // Application.CreateForm(TMenu, Menu);
+  Application.CreateForm(TOmringa, Omringa);
+  //Application.CreateForm(TForm2, Form2);
+  //Application.
+  //Application.CreateForm(TForm2, Form2);
+  Application.Run;
+end.
