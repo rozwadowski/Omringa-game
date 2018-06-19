@@ -1,0 +1,22 @@
+REGU£Y GRY OMRINGA:
+   1. Gra toczy siê na kwadratowej planszy n x n miêdzy kó³kiem i krzy¿ykiem.
+   2. Gra zaczyna siê od tajnej aukcji, ka¿dy z graczy podaje 
+	liczbê ca³kowit¹ + 0.5 (np 5.5 albo 6.5). Ten z nich który 
+	poda wiêksza liczbê zaczyna, ale przeciwnik dostaje tyle punktów
+	ile sam zalicytowa³. Je¿eli zalicytuj¹ tyle samo to jest losowanie 
+	kto zaczyna. (przeciwnik wci¹¿ dostaje tyle punktów) Zaczyna kó³ko. 
+	Np. Alef licytuje 3.5, Buka licytuje 5.5 - Buka zaczyna kó³kiem, 
+	Alef gra krzy¿ykiem i dostaje 3.5 punktu.
+   3. Gracz kó³ko i krzy¿yk na zmianê stawiaj¹ na jednym z wolnych pól odpowiednio 
+	kó³ko lub krzy¿yk lub pasuj¹. Gra koñczy siê gdy obaj gracze spasuj¹.
+   4. Grupa jest to maksymalny zbiór kó³ek (krzy¿yków) przyleg³ych do siebie
+	 bokami (nie po przek¹tnych).
+
+Po zakoñczeniu gry gracz dostaje punkty:
+
+    * 1 punkt za ka¿de kó³ko (krzy¿yk),
+    * - (Kara za grupê) punktów za ka¿d¹ grupê (im wiêcej grup tym gorzej),
+    * krzy¿yk dostaje tyle ile zalicytowa³ na pocz¹tku.
+
+Wygrywa ten gracz który ma wiêcej punktów.
+Dziêki licytacji po³ówkowej nie ma remisów. 
